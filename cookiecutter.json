@@ -10,7 +10,7 @@
     "Powertools for AWS Lambda (TypeScript) Metrics": ["disabled","enabled"],
     "_copy_without_render": [
         ".gitignore",
-        ".github/workflows/{{cookiecutter.module_name}}-pipeline.yaml"
+        ".github/workflows/*"
     ]
 
 }
