@@ -12,7 +12,7 @@ Resources:
     # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: {{cookiecutter.module_name}}/
+      CodeUri: app/
       Handler: app.lambdaHandler
       Runtime: nodejs16.x
       {%- if cookiecutter.architectures.value != []%}

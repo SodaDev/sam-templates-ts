@@ -1,6 +1,5 @@
 {
     "project_name": "Name of the project",
-    "module_name": "Name of the module",
     "stack_name": "Name of CloudFormation stack",
     "runtime": "nodejs16.x",
     "architectures": {
@@ -10,7 +9,7 @@
     "Powertools for AWS Lambda (TypeScript) Metrics": ["disabled","enabled"],
     "_copy_without_render": [
         ".gitignore",
-        ".github/workflows/{{cookiecutter.module_name}}-pipeline.yaml"
+        ".github/workflows/sam-pipeline.yaml"
     ]
 
 }
