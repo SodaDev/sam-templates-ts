@@ -1,6 +1,6 @@
-import { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
-import { lambdaHandler } from '../../app';
-import { expect, describe, it } from '@jest/globals';
+import {Context} from 'aws-lambda';
+import {lambdaHandler} from '../../app';
+import {describe, expect, it} from '@jest/globals';
 
 describe('Unit test for app handler', function () {
     it('verifies successful response', async () => {
@@ -29,13 +29,10 @@ describe('Unit test for app handler', function () {
                 throw new Error('Function not implemented.');
             }
         };
-        const result: APIGatewayProxyResult = await lambdaHandler(event,context);
+        const result: any = await lambdaHandler(event,context);
 
-        expect(result.statusCode).toEqual(200);
-        expect(result.body).toEqual(
-            JSON.stringify({
-                message: 'hello world',
-            }),
-        );
+        expect(result).toEqual({
+            message: 'hello world',
+        });
     });
 });

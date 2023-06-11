@@ -8,6 +8,14 @@ Globals:
     MemorySize: 128
 
 Resources:
+  FunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub
+        - '/aws/lambda/${LambdaName}'
+        - { LambdaName: !Ref Function }
+      RetentionInDays: 14
+
   Function:
     # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Type: AWS::Serverless::Function
@@ -43,3 +51,6 @@ Resources:
         # Sourcemap: true # Enabling source maps will create the required NODE_OPTIONS environment variables on your lambda function during sam build
         EntryPoints: 
         - app.ts
+
+  # TODO: Add alarms
+  # TODO: Add OTEL
