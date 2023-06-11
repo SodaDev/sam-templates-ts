@@ -1,7 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for {{ cookiecutter.project_name }}
-  
+
+Parameters:
+  LogLevel:
+    Type: String
+    AllowedValues:
+      - DEBUG
+      - INFO
+      - WARN
+      - ERROR
+      - SILENT
+
 Globals:
   Function:
     Timeout: 3
@@ -13,4 +23,5 @@ Resources:
     Properties:
       Location: ./{{cookiecutter.project_name}}/template.yaml
       # Optional parameter that can have default value overridden
-#      Parameters:
+      Parameters:
+        LogLevel: !Ref LogLevel

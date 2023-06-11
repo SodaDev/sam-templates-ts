@@ -6,4 +6,6 @@ deploy: build
 		--stack-name={{cookiecutter.stack_name}} \
 		--no-confirm-changeset --no-fail-on-empty-changeset \
 		--resolve-s3 \
-		--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND
+		--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+        --parameter-overrides \
+            LogLevel="INFO"

@@ -1,7 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: SAM Template for {{ cookiecutter.project_name }}
-  
+
+Parameters:
+  LogLevel:
+    Type: String
+    AllowedValues:
+      - DEBUG
+      - INFO
+      - WARN
+      - ERROR
+      - SILENT
+
 Globals:
   Function:
     Timeout: 3
@@ -21,28 +31,29 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: app/
-      Handler: app.lambdaHandler
+      Handler: app.handler
       Runtime: nodejs16.x
-      {%- if cookiecutter.architectures.value != []%}
       Architectures:
-      {%- for arch in cookiecutter.architectures.value %}
-        - {{arch}}
-      {%- endfor %}
-      {%- endif %}
-      {%- if cookiecutter["Powertools for AWS Lambda (TypeScript) Tracing"] == "enabled"%}
+        - arm64
       Tracing: Active
-      {%- endif %}
-      {%- if cookiecutter["Powertools for AWS Lambda (TypeScript) Tracing"] == "enabled" or cookiecutter["Powertools for AWS Lambda (TypeScript) Metrics"] == "enabled" %}
+      AutoPublishAlias: live
       Environment:
         Variables:
-          {%- if cookiecutter["Powertools for AWS Lambda (TypeScript) Tracing"] == "enabled" or cookiecutter["Powertools for AWS Lambda (TypeScript) Metrics"] == "enabled"%}
-          POWERTOOLS_SERVICE_NAME: helloWorld
-          {%- endif %}
-          {%- if cookiecutter["Powertools for AWS Lambda (TypeScript) Metrics"] == "enabled"%}
-          POWERTOOLS_METRICS_NAMESPACE: {{ cookiecutter.project_name|lower|replace(' ', '-') }}
-          {%- endif %}
-          LOG_LEVEL: INFO
-      {%- endif %}
+          LOG_LEVEL: !Ref LogLevel
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/otel-handler
+          {% raw %}
+          OPENTELEMETRY_COLLECTOR_CONFIG_FILE:
+            !Sub
+            - '{{resolve:ssm:${ConfigLocation}}}'
+            - ConfigLocation:
+                Fn::ImportValue: OTEL::CollectorConfig::S3Location
+          {% endraw %}
+          OPENTELEMETRY_EXTENSION_LOG_LEVEL: warn
+          OTEL_SERVICE_NAME: {{ cookiecutter.project_name }}
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1
+      Policies:
+        - Fn::ImportValue: OTEL::CollectorConfig::AccessPolicy
     Metadata: # Manage esbuild properties
       BuildMethod: esbuild
       BuildProperties:
@@ -52,5 +63,23 @@ Resources:
         EntryPoints: 
         - app.ts
 
-  # TODO: Add alarms
-  # TODO: Add OTEL
+  # TODO: Adjust and extend alarms
+  FunctionErrorAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Lambda errors
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref Function
+      Statistic: Sum
+      EvaluationPeriods: 1
+      Threshold: 1.0
+      TreatMissingData: notBreaching
+      Period: 300
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      AlarmActions:
+        - Fn::ImportValue: OTEL::SNS:AlarmTopicArn
+      OKActions:
+        - Fn::ImportValue: OTEL::SNS:AlarmTopicArn

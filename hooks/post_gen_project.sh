@@ -22,6 +22,7 @@ if [ ! -f "../Makefile" ]; then
     mv Makefile ../
 else
     echo "Makefile already exists"
+    rm Makefile
 fi
 
 if [ ! -f "../template.yaml" ]; then
@@ -48,6 +49,8 @@ else
 Type: AWS::Serverless::Application
 Properties:
   Location: ./{{cookiecutter.project_name}}/template.yaml
+  Parameters:
+    LogLevel: !Ref LogLevel
 EOF
 )
         # Add the item and its value to the YAML file
