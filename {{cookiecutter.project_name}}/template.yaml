@@ -50,6 +50,7 @@ Resources:
           {% endraw %}
           OPENTELEMETRY_EXTENSION_LOG_LEVEL: warn
           OTEL_SERVICE_NAME: {{ cookiecutter.project_name }}
+          POWERTOOLS_SERVICE_NAME: {{ cookiecutter.project_name }}
       Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:901920570463:layer:aws-otel-nodejs-arm64-ver-1-12-0:1
       Policies:
