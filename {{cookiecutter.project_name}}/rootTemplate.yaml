@@ -14,7 +14,7 @@ Parameters:
 
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 15
     MemorySize: 128
 
 Resources:
