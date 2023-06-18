@@ -1,5 +1,5 @@
 import {Context} from 'aws-lambda';
-import {lambdaHandler} from '../../app';
+import {handler} from '../../app';
 import {describe, expect, it} from '@jest/globals';
 
 describe('Unit test for app handler', function () {
@@ -29,7 +29,7 @@ describe('Unit test for app handler', function () {
                 throw new Error('Function not implemented.');
             }
         };
-        const result: any = await lambdaHandler(event,context);
+        const result: any = await handler(event,context);
 
         expect(result).toEqual({
             message: 'hello world',
